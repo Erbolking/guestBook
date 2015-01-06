@@ -126,22 +126,22 @@
                 <form>
                     <div class="row collapse">
                         <div class="large-2 columns">
-                            <label class="inline">Your Name</label>
+                            <label class="inline">Your Name *</label>
                         </div>
                         <div class="large-10 columns">
-                            <input type="text" id="yourName" placeholder="Jane Smith">
+                            <input type="text" id="yourName" placeholder="Albert Einstein" required pattern="[a-zA-Z]+">
                         </div>
                     </div>
                     <div class="row collapse">
                         <div class="large-2 columns">
-                            <label class="inline">Your Email</label>
+                            <label class="inline">Your Email *</label>
                         </div>
                         <div class="large-10 columns">
-                            <input type="text" id="yourEmail" placeholder="test@test.com">
+                            <input type="email" id="yourEmail" placeholder="test@test.com" required>
                         </div>
                     </div>
-                    <label for="comment">Comment</label>
-                    <textarea id="comment"  rows="4"></textarea>
+                    <label for="comment">Comment *</label>
+                    <textarea id="comment"  rows="4" required></textarea>
                     <button type="submit" class="radius button">POST</button>
                 </form>
             </div>
