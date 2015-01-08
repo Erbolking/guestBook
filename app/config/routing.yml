@@ -1,3 +1,8 @@
+erbolking_guest_book:
+    resource: "@ErbolkingGuestBookBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 app:
     resource: @AppBundle/Controller/
     type:     annotation
