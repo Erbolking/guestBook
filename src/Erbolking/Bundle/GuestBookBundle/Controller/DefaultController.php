@@ -4,32 +4,77 @@ namespace Erbolking\Bundle\GuestBookBundle\Controller;
 
 use Doctrine\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Erbolking\Bundle\GuestBookBundle\Entity\Entry;
+use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use \DateTime;
 
 class DefaultController extends Controller
 {
     /**
-     * @Route("/")
+     * @Route("/", name="list")
      * @Template()
      */
     public function indexAction()
     {
-        $entry = $this->getDoctrine()->getRepository('ErbolkingGuestBookBundle:Entry')->findAll();
+        $entry = $this->getDoctrine()->getRepository('ErbolkingGuestBookBundle:Entry')->findBy(array(), array('publicDate' => 'DESC'));
+        $form = $this->getForm($entry);
         return array(
-            'entries' => $entry
+            'entries' => $entry,
+            'form' => $form->createView(),
         );
     }
 
     /**
-     * @Route("/post")
+     * @Route("/post", name="post_entry")
      * @Method("POST")
      */
-    public function addPostAction()
+    public function addPostAction(Request $request)
     {
+        //set extra values
+        $entry = new Entry();
+        $entry->setActive('1');
+        $entry->setPublicDate(new DateTime());
+        $entry->setIpAddress($request->getClientIp());
 
+        $form = $this->getForm($entry);
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($entry);
+            $em->flush();
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse('200');
+            } else {
+                return $this->redirect($this->generateUrl('list'));
+            }
+        } else {
+            $errors = array();
+            foreach ($form->getErrors() as $error) {
+                $errors[$form->getName()][] = $error->getMessage();
+            }
+            return new JsonResponse($errors);
+        }
+    }
+
+    private function getForm($entry) {
+        $form = $this->createFormBuilder($entry)
+            ->add('name', 'text', array(
+                    'label' => 'Your name',
+                    'label_attr' => array('class' => 'inline'),
+                    'attr' => array('pattern' => '[a-zA-Z]+( [a-zA-Z]+)?', 'placeholder' => 'Albert Einstein'),
+                )
+            )
+            ->add('email', 'email', array(
+                    'label' => 'Your email',
+                    'label_attr' => array('class' => 'inline'))
+            )
+            ->add('comment', 'textarea')
+            ->add('post', 'submit', array('label' => 'POST', 'attr' => array('class' => 'radius button')))
+            ->getForm();
+        return $form;
     }
 }

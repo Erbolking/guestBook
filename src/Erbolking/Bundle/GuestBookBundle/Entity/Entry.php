@@ -3,6 +3,7 @@
 namespace Erbolking\Bundle\GuestBookBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Entry
@@ -40,7 +41,7 @@ class Entry
      *
      * @ORM\Column(name="comment", type="text")
      */
-    private $comment;
+    private $message;
 
     /**
      * @var boolean
@@ -59,7 +60,7 @@ class Entry
     /**
      * @var string
      *
-     * @ORM\Column(name="image", type="string", length=255)
+     * @ORM\Column(name="image", type="string", length=255, nullable=true)
      */
     private $image;
 
@@ -70,6 +71,20 @@ class Entry
      */
     private $ipAddress;
 
+    /**
+     * @var string
+     *
+     * @ORM\ManyToOne(targetEntity="entry", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+
+    /**
+     * @var Entry
+     *
+     * @ORM\OneToMany(targetEntity="entry", mappedBy="parent")
+     */
+    private $children;
 
     /**
      * Get id
@@ -133,9 +148,9 @@ class Entry
      * @param string $comment
      * @return Entry
      */
-    public function setComment($comment)
+    public function setMessage($comment)
     {
-        $this->comment = $comment;
+        $this->message = $comment;
 
         return $this;
     }
@@ -145,9 +160,9 @@ class Entry
      *
      * @return string 
      */
-    public function getComment()
+    public function getMessage()
     {
-        return $this->comment;
+        return $this->message;
     }
 
     /**
@@ -240,5 +255,49 @@ class Entry
     public function getIpAddress()
     {
         return $this->ipAddress;
+    }
+
+    /**
+     * Get parentId
+     *
+     * @return string
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param string $parent
+     * @return Entry
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get Children
+     *
+     * @return Entry
+     */
+    public function getChildren() {
+        return $this->children;
+    }
+
+    /**
+     * Set Children
+     *
+     * @param string $children
+     * @return Entry
+     */
+    public function setChildren($children) {
+        $this->children = $children;
+
+        return $this;
     }
 }

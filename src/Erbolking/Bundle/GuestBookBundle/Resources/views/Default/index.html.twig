@@ -53,57 +53,34 @@
     <div class="large-10 columns">
         {% for entry in entries %}
             <div class="row">
-                <div class="large-2 columns small-3"><img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/></div>
+                <div class="large-2 columns small-3">
+                    <img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/>
+                    <div class="publicDate">
+                        {{ entry.publicDate|date('Y-m-d H:i') }}
+                    </div>
+                </div>
                 <div class="large-10 columns">
-                    <p><strong>Some Person said:</strong> Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.</p>
+                    <p><strong>{{ entry.name }} said:</strong> {{ entry.comment }}</p>
                     <ul class="inline-list">
-                        <li><a href="">Reply</a></li>
-                        <li><a href="">Share</a></li>
+                        <li><a class="scroll" href="#post">Reply</a></li>
                     </ul>
-                    <hr>
-                    <h6>2 Comments:</h6>
-                    <div class="row">
-                        <div class="large-2 columns small-3"><img class="th" src="http://placehold.it/50x50&text=[img]"/></div>
-                        <div class="large-10 columns"><p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit</p></div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="large-2 columns small-3"><img class="th" src="http://placehold.it/50x50&text=[img]"/></div>
-                        <div class="large-10 columns"><p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit</p></div>
-                    </div>
+                    {% if entry.children|length %}
+                        <hr>
+                        <h6>{{ entry.children|length }} Comments:</h6>
+                        {% for subentry in entry.children %}
+                            <div class="row">
+                                <div class="large-2 columns small-3"><img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/></div>
+                                <div class="large-10 columns"><p><strong>{{ subentry.name }} said:</strong> {{ subentry.comment }}</p></div>
+                            </div>
+                            {% if loop.last == false and loop.index > 0 %}
+                                <hr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
+            <hr/>
         {% endfor %}
-        <hr/>
-        <div class="row">
-            <div class="large-2 columns small-3"><img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/></div>
-            <div class="large-10 columns">
-                <p><strong>Some Person said:</strong> Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.</p>
-                <ul class="inline-list">
-                    <li><a href="">Reply</a></li>
-                    <li><a href="">Share</a></li>
-                </ul>
-            </div>
-        </div>
-        <hr/>
-
-        <div class="row">
-            <div class="large-2 columns small-3"><img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/></div>
-            <div class="large-10 columns">
-                <p><strong>Some Person said:</strong> Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong.</p>
-                <ul class="inline-list">
-                    <li><a href="">Reply</a></li>
-                    <li><a href="">Share</a></li>
-                </ul>
-                <h6>2 Comments</h6>
-                <div class="row">
-                    <div class="large-2 columns small-3"><img class="th" src="http://placehold.it/50x50&text=[img]"/></div>
-                    <div class="large-10 columns"><p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit</p></div>
-                </div>
-            </div>
-        </div>
-        <hr/>
-
         <div class="row">
             <div class="large-centered large-8 columns">
                 <ul class="pagination" role="menubar" aria-label="Pagination">
@@ -122,30 +99,29 @@
         </div>
 
         <hr/>
-        <section class="section">
-            <h5 class="title"><a href="#panel1">Add a feedback</a></h5>
+        <section id="post" class="post">
+            <h5 class="title">Add a feedback</h5>
             <div class="content" data-slug="panel1">
-                <form>
+                {{ form_start(form, {'action': path('post_entry')}) }}
+                {{ form_errors(form) }}
                     <div class="row collapse">
                         <div class="large-2 columns">
-                            <label class="inline">Your Name *</label>
+                            {{ form_label(form.name) }}
                         </div>
                         <div class="large-10 columns">
-                            <input type="text" id="yourName" placeholder="Albert Einstein" required pattern="[a-zA-Z]+">
+                            {{ form_row(form.name, { 'label': false }) }}
                         </div>
                     </div>
                     <div class="row collapse">
                         <div class="large-2 columns">
-                            <label class="inline">Your Email *</label>
+                            {{ form_label(form.email) }}
                         </div>
                         <div class="large-10 columns">
-                            <input type="email" id="yourEmail" placeholder="test@test.com" required>
+                            {{ form_row(form.email, { 'attr': {'placeholder': "test@test.com"}, 'label': false }) }}
                         </div>
                     </div>
-                    <label for="comment">Comment *</label>
-                    <textarea id="comment"  rows="4" required></textarea>
-                    <button type="submit" class="radius button">POST</button>
-                </form>
+                    {{ form_row(form.comment, { 'attr': {'rows': "6"}}) }}
+                {{ form_end(form) }}
             </div>
         </section>
     </div>
