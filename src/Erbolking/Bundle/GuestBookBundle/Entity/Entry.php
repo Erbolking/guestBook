@@ -39,7 +39,7 @@ class Entry
     /**
      * @var string
      *
-     * @ORM\Column(name="comment", type="text")
+     * @ORM\Column(name="message", type="text")
      */
     private $message;
 
@@ -143,20 +143,20 @@ class Entry
     }
 
     /**
-     * Set comment
+     * Set message
      *
-     * @param string $comment
+     * @param string $message
      * @return Entry
      */
-    public function setMessage($comment)
+    public function setMessage($message)
     {
-        $this->message = $comment;
+        $this->message = $message;
 
         return $this;
     }
 
     /**
-     * Get comment
+     * Get message
      *
      * @return string 
      */

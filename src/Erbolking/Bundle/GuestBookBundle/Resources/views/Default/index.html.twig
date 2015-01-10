@@ -52,25 +52,27 @@
     <hr>
     <div class="large-10 columns">
         {% for entry in entries %}
-            <div class="row">
-                <div class="large-2 columns small-3">
-                    <img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/>
-                    <div class="publicDate">
-                        {{ entry.publicDate|date('Y-m-d H:i') }}
+            <div class="row entry">
+                <div class="author-details columns middle-2 large-2  small-4">
+                    <div class="">
+                        <img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/>
+                        <div class="publicDate">
+                            <p>{{ entry.publicDate|date('Y-M-d H:i') }}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="large-10 columns">
-                    <p><strong>{{ entry.name }} said:</strong> {{ entry.comment }}</p>
+                <div class="columns middle-10 large-10 small-8">
+                    <p><strong>{{ entry.name }}</strong> ({{ entry.email }}) said: {{ entry.message }}</p>
                     <ul class="inline-list">
-                        <li><a class="scroll" href="#post">Reply</a></li>
+                        <li><a class="scroll" data-username="{{ entry.name }}" data-id="{{ entry.id }}" href="#post">Reply</a></li>
                     </ul>
                     {% if entry.children|length %}
                         <hr>
-                        <h6>{{ entry.children|length }} Comments:</h6>
+                        <h6>{{ entry.children|length }} Messages:</h6>
                         {% for subentry in entry.children %}
                             <div class="row">
                                 <div class="large-2 columns small-3"><img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/></div>
-                                <div class="large-10 columns"><p><strong>{{ subentry.name }} said:</strong> {{ subentry.comment }}</p></div>
+                                <div class="large-10 columns"><p><strong>{{ subentry.name }} said:</strong> {{ subentry.message }}</p></div>
                             </div>
                             {% if loop.last == false and loop.index > 0 %}
                                 <hr>
@@ -103,6 +105,14 @@
             <h5 class="title">Add a feedback</h5>
             <div class="content" data-slug="panel1">
                 {{ form_start(form, {'action': path('post_entry')}) }}
+                <img src="{{ asset('bundles/guestbook/images/reply.png') }}"/>
+                <div class="reply">
+                    <div class="title">
+                        <span>Reply to: <span id="reply-name"></span></span>
+                        <span><a href="#">×</a></span>
+                        {{ form_row(form.parent) }}
+                    </div>
+                </div>
                 {{ form_errors(form) }}
                     <div class="row collapse">
                         <div class="large-2 columns">
@@ -120,7 +130,7 @@
                             {{ form_row(form.email, { 'attr': {'placeholder': "test@test.com"}, 'label': false }) }}
                         </div>
                     </div>
-                    {{ form_row(form.comment, { 'attr': {'rows': "6"}}) }}
+                    {{ form_row(form.message, { 'attr': {'rows': "6"}}) }}
                 {{ form_end(form) }}
             </div>
         </section>

@@ -1,10 +1,27 @@
 label.left {
     margin-right:4px;
 }
+.author-details {
+    text-align: center;
+}
 .publicDate {
     font-size: 12px;
     text-align: center;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
     padding: 2px 2px 0 2px;
     border-radius: 2px;
+}
+
+div.entry {
+    background: rgb(243, 245, 253);
+    box-shadow: 0 0 0 1px rgb(240, 240, 240);
+    padding: 6px;
+}
+
+.reply {
+    display: none;
+    margin: 5px 0 5px 0;
+}
+
+#reply-name {
+    font-weight: bold;
 }

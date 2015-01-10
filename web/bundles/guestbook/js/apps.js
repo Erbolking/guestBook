@@ -14,6 +14,15 @@ $(function() {
         $('body').animate({
             scrollTop: scrollDown
         }, 1200, 'swing');
+
+        //render reply block
+        var username = $(this).data('username');
+        var id = $(this).data('id');
+        if (username) {
+            $('#reply-name').html(username);
+            $('#form_parent').val(id);
+            $('.reply').show();
+        }
         event.preventDefault();
     });
 });
