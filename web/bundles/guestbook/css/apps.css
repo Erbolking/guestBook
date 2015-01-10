@@ -15,6 +15,7 @@ div.entry {
     background: rgb(243, 245, 253);
     box-shadow: 0 0 0 1px rgb(240, 240, 240);
     padding: 6px;
+    -webkit-transition: all 1s;-moz-transition: all 1s;-ms-transition: all 1s;-o-transition: all 1s;transition: all 1s;
 }
 
 .reply {

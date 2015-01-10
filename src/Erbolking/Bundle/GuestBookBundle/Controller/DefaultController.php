@@ -2,11 +2,12 @@
 
 namespace Erbolking\Bundle\GuestBookBundle\Controller;
 
-use Doctrine\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Erbolking\Bundle\GuestBookBundle\Entity\Entry;
 use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\QueryBuilder;
+use Erbolking\Bundle\GuestBookBundle\Entity\Entry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -20,10 +21,29 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        $entry = $this->getDoctrine()->getRepository('ErbolkingGuestBookBundle:Entry')->findBy(array('parent' => null), array('publicDate' => 'DESC'));
-        $form = $this->getForm($entry);
+        $repository = $this->getDoctrine()->getRepository('ErbolkingGuestBookBundle:Entry');
+        /* @var $repository \Doctrine\ORM\EntityRepository */
+        $queryBuilder = $repository->createQueryBuilder('e');
+
+        $currentPage = $this->getRequest()->get('page', 1);
+        $entriesPerPage = $this->getRequest()->get('limit', 10);
+        if (!$entriesPerPage || !is_numeric($entriesPerPage) || ($entriesPerPage % 10) !== 0) {
+            $entriesPerPage = 10;
+        }
+        if (!is_numeric($currentPage) || !$currentPage) {
+            $currentPage = 1;
+        }
+        $paginator = $this->getDoctrinePaginator($queryBuilder, $entriesPerPage, $currentPage);
+        $pagination = array(
+            'pagesCount' => (int) ceil(count($paginator) / $entriesPerPage),
+            'currentPage' => $currentPage,
+            'perPage' => $entriesPerPage,
+        );
+        $form = $this->getForm(new Entry());
+
         return array(
-            'entries' => $entry,
+            'entries' => $paginator,
+            'pagination' => $pagination,
             'form' => $form->createView(),
         );
     }
@@ -39,6 +59,7 @@ class DefaultController extends Controller
         $entry->setActive('1');
         $entry->setPublicDate(new DateTime());
         $entry->setIpAddress($request->getClientIp());
+
         $formPost = $request->get('form');
         if (isset($formPost['parent']) && $formPost['parent']) {
             $parent = $this->getDoctrine()->getRepository('ErbolkingGuestBookBundle:Entry')->find($formPost['parent']);
@@ -89,5 +110,15 @@ class DefaultController extends Controller
             ->add('post', 'submit', array('label' => 'POST', 'attr' => array('class' => 'radius button')))
             ->getForm();
         return $form;
+    }
+
+    private function getDoctrinePaginator(QueryBuilder $queryBuilder, $limit = 10, $page)
+    {
+        $queryBuilder->where('e.parent is NULL')
+            ->setFirstResult(($page - 1) * $limit)
+            ->orderBy('e.publicDate', 'DESC')
+            ->setMaxResults($limit);
+
+        return new Paginator($queryBuilder);
     }
 }
