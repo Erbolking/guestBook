@@ -72,9 +72,9 @@ class Entry
     private $ipAddress;
 
     /**
-     * @var string
+     * @var Entry
      *
-     * @ORM\ManyToOne(targetEntity="entry", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="entry", inversedBy="children", cascade={"persist"})
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;

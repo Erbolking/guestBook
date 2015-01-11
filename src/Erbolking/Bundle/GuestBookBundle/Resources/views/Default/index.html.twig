@@ -53,18 +53,22 @@
         {% for entry in entries %}
             <div id="{{ entry.id }}" class="row entry">
                 <div class="author-details columns middle-2 large-2  small-4">
-                    <div class="">
+                    <div>
                         <img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/>
                         <div class="publicDate">
-                            <p>{{ entry.publicDate|date('Y-M-d H:i') }}</p>
+                            <p> {{ entry.publicDate|date('Y-M-d H:i') }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="columns middle-10 large-10 small-8">
-                    <p><strong>{{ entry.name }}</strong> ({{ entry.email }}) said: {{ entry.message }}</p>
-                    <ul class="inline-list">
-                        <li><a class="scroll" data-username="{{ entry.name }}" data-id="{{ entry.id }}" href="#post">Reply</a></li>
-                    </ul>
+                    <div class="guest-post">
+                        <span class="guest-name">{{ entry.name }}</span> (<a href="mailto:{{ entry.email }}">{{ entry.email }}</a>) said:
+                        <span class="guest-post-id right">#{{ entry.id }}</span>
+                        <span class="guest-message">{{ entry.message }}</span>
+                    </div>
+                    <span class="reply-button">
+                        <a class="scroll" data-username="{{ entry.name }}" data-id="{{ entry.id }}" href="#post">Reply</a>
+                    </span>
                     {% if entry.children|length %}
                         <hr>
                         <h6>{{ entry.children|length }} Messages:</h6>
@@ -92,7 +96,7 @@
             <div class="content" data-slug="panel1">
                 {{ form_start(form, {'action': path('post_entry')}) }}
                 <img src="{{ asset('bundles/guestbook/images/reply.png') }}"/>
-                <div class="reply">
+                <div class="reply-block">
                     <div class="title">
                         <span>Reply to: <span id="reply-name"></span></span>
                         <span><a id="break-reply" href="#">×</a></span>

@@ -60,17 +60,21 @@ class DefaultController extends Controller
         $entry->setPublicDate(new DateTime());
         $entry->setIpAddress($request->getClientIp());
 
+        //get form
+        $form = $this->getForm($entry);
+
         $formPost = $request->get('form');
         if (isset($formPost['parent']) && $formPost['parent']) {
             $parent = $this->getDoctrine()->getRepository('ErbolkingGuestBookBundle:Entry')->find($formPost['parent']);
             if ($parent) {
                 $entry->setParent($parent);
-            } else {
-                $request->query->remove('parent');
+                $form->remove('parent');
             }
+            unset($formPost['parent']);
+            $request->request->set('form', $formPost);
+
         }
 
-        $form = $this->getForm($entry);
         $form->handleRequest($request);
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -103,10 +107,7 @@ class DefaultController extends Controller
                     'label_attr' => array('class' => 'inline'))
             )
             ->add('message', 'textarea')
-            ->add('parent', 'hidden',
-                array(
-                    'data_class' => 'Erbolking\Bundle\GuestBookBundle\Entity\Entry',
-                ))
+            ->add('parent', 'hidden')
             ->add('post', 'submit', array('label' => 'POST', 'attr' => array('class' => 'radius button')))
             ->getForm();
         return $form;

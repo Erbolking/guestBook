@@ -25,7 +25,7 @@ $(function() {
         if (username) {
             $('#reply-name').html(username);
             $('#form_parent').val(id);
-            $('.reply').show();
+            $('.reply-block').show();
         }
         e.preventDefault();
     });
@@ -37,7 +37,7 @@ $(function() {
     $('#break-reply').click(function(e) {
         //hide reply block
         $('form_parent').val('');
-        $('.reply').hide();
+        $('.reply-block').hide();
 
         var entityBlock = $('#' + previousEntryId);
         entityBlock.css('background', 'rgb(255, 255, 196)');

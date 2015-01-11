@@ -5,10 +5,16 @@ label.left {
     text-align: center;
 }
 .publicDate {
-    font-size: 12px;
     text-align: center;
     padding: 2px 2px 0 2px;
     border-radius: 2px;
+}
+.publicDate p {
+    font-size: 14px;
+}
+
+.publicDate p:before {
+    content: '⌚';
 }
 
 div.entry {
@@ -18,7 +24,36 @@ div.entry {
     -webkit-transition: all 1s;-moz-transition: all 1s;-ms-transition: all 1s;-o-transition: all 1s;transition: all 1s;
 }
 
-.reply {
+div.entry .guest-post {
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+
+div.entry .guest-message {
+    display: block;
+    border-top: 1px dashed #6f6f6f;
+    padding-top: 5px;
+}
+
+div.entry .guest-name {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+div.entry .guest-post-id {
+    font-size: 12px;
+}
+
+.reply-button {
+    padding: 2px;
+}
+
+.reply-button:before {
+    content: '✍';
+    font-size: 12px;
+}
+
+.reply-block {
     display: none;
     margin: 5px 0 5px 0;
 }
