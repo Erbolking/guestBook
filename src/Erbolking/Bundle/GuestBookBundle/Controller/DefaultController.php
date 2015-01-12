@@ -25,8 +25,8 @@ class DefaultController extends Controller
         /* @var $repository \Doctrine\ORM\EntityRepository */
         $queryBuilder = $repository->createQueryBuilder('e');
 
-        $currentPage = $this->getRequest()->get('page', 1);
-        $entriesPerPage = $this->getRequest()->get('limit', 10);
+        $currentPage = abs($this->getRequest()->get('page', 1));
+        $entriesPerPage = abs($this->getRequest()->get('limit', 10));
         if (!$entriesPerPage || !is_numeric($entriesPerPage) || ($entriesPerPage % 10) !== 0) {
             $entriesPerPage = 10;
         }
@@ -35,10 +35,11 @@ class DefaultController extends Controller
         }
         $paginator = $this->getDoctrinePaginator($queryBuilder, $entriesPerPage, $currentPage);
         $pagination = array(
-            'pagesCount' => (int) ceil(count($paginator) / $entriesPerPage),
+            'pagesCount' => (int) ceil($paginator->count() / $entriesPerPage),
             'currentPage' => $currentPage,
             'perPage' => $entriesPerPage,
         );
+
         $form = $this->getForm(new Entry());
 
         return array(
@@ -49,8 +50,10 @@ class DefaultController extends Controller
     }
 
     /**
+     * @param Request $request
      * @Route("/post", name="post_entry")
      * @Method("POST")
+     * @return JsonResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function addPostAction(Request $request)
     {
@@ -66,36 +69,45 @@ class DefaultController extends Controller
         $formPost = $request->get('form');
         if (isset($formPost['parent']) && $formPost['parent']) {
             $parent = $this->getDoctrine()->getRepository('ErbolkingGuestBookBundle:Entry')->find($formPost['parent']);
+            /* @var $parent \Erbolking\Bundle\GuestBookBundle\Entity\Entry */
             if ($parent) {
                 $entry->setParent($parent);
+                //remove unnecessary property
                 $form->remove('parent');
             }
             unset($formPost['parent']);
             $request->request->set('form', $formPost);
-
         }
 
         $form->handleRequest($request);
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+
+            $entry->uploadImage();
             $em->persist($entry);
             $em->flush();
             if ($request->isXmlHttpRequest()) {
-                return new JsonResponse('200');
-            } else {
-                return $this->redirect($this->generateUrl('list'));
+                $entryExtraInfo = array_merge($formPost, array('image' => $entry->getImage()));
+                return new JsonResponse(array('status' => 'ok', 'entry' => $entryExtraInfo));
             }
+            return $this->redirect($this->generateUrl('list'));
         } else {
             $errors = array();
-            foreach ($form->getErrors() as $error) {
-                $errors[$form->getName()][] = $error->getMessage();
+            foreach ($form as $field) {
+                foreach ($field->getErrors() as $error) {
+                    $errors[$field->getName()][] = $error->getMessage();
+                }
             }
-            return new JsonResponse($errors);
+            return new JsonResponse(array('status' => 'error', 'errors' => $errors));
         }
     }
 
+    /**
+     * @param $entry
+     * @return \Symfony\Component\Form\Form
+     */
     private function getForm($entry) {
-        $form = $this->createFormBuilder($entry)
+        $form = $this->createFormBuilder($entry, array('attr' => array('id' => 'postForm')))
             ->add('name', 'text', array(
                     'label' => 'Your name',
                     'label_attr' => array('class' => 'inline'),
@@ -107,12 +119,21 @@ class DefaultController extends Controller
                     'label_attr' => array('class' => 'inline'))
             )
             ->add('message', 'textarea')
+            ->add('image', 'file', array('required' => false, 'attr' => array('accept' =>'image/x-png, image/gif, image/jpeg')))
             ->add('parent', 'hidden')
+            ->add('captcha', 'captcha', array('reload' => true, 'as_url' => true))
             ->add('post', 'submit', array('label' => 'POST', 'attr' => array('class' => 'radius button')))
             ->getForm();
+
         return $form;
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param int $limit
+     * @param $page
+     * @return Paginator
+     */
     private function getDoctrinePaginator(QueryBuilder $queryBuilder, $limit = 10, $page)
     {
         $queryBuilder->where('e.parent is NULL')

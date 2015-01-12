@@ -3,7 +3,8 @@
 namespace Erbolking\Bundle\GuestBookBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Entry
@@ -26,6 +27,7 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank
      */
     private $name;
 
@@ -33,6 +35,8 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+     * @Assert\Email
+     * @Assert\NotBlank
      */
     private $email;
 
@@ -40,6 +44,7 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="message", type="text")
+     * @Assert\NotBlank
      */
     private $message;
 
@@ -61,6 +66,11 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="image", type="string", length=255, nullable=true)
+     * @Assert\File(
+     *     maxSize = "10M",
+     *     mimeTypes = {"image/png", "image/gif", "image/jpeg", "image/jpg"},
+     *     mimeTypesMessage = "Please upload a valid image"
+     * )
      */
     private $image;
 
@@ -214,10 +224,10 @@ class Entry
     /**
      * Set image
      *
-     * @param string $image
-     * @return Entry
+     * @param UploadedFile $image
+     * @return $this
      */
-    public function setImage($image)
+    public function setImage(UploadedFile $image)
     {
         $this->image = $image;
 
@@ -227,7 +237,7 @@ class Entry
     /**
      * Get image
      *
-     * @return string 
+     * @return UploadedFile
      */
     public function getImage()
     {
@@ -270,7 +280,7 @@ class Entry
     /**
      * Set parent
      *
-     * @param string $parent
+     * @param Entry $parent
      * @return Entry
      */
     public function setParent($parent)
@@ -299,5 +309,41 @@ class Entry
         $this->children = $children;
 
         return $this;
+    }
+
+    /**
+     * Get Absolute Image Upload Directory Path
+     *
+     * @return string
+     */
+    public function getUploadRootDir()
+    {
+        return __DIR__. '/../../../../../web/' . $this->getUploadDir();
+    }
+
+    /**
+     * Get Relative Image Upload Directory Path
+     *
+     * @return string
+     */
+    public function getUploadDir()
+    {
+        return 'uploads/images';
+    }
+
+    /**
+     * Upload Image
+     */
+    public function uploadImage()
+    {
+        if (null === $this->getImage()) {
+            return;
+        }
+
+        $this->getImage()->move(
+            $this->getUploadRootDir(),
+            $this->getImage()->getClientOriginalName()
+        );
+        $this->image = $this->getUploadDir() . DIRECTORY_SEPARATOR . $this->getImage()->getClientOriginalName();
     }
 }

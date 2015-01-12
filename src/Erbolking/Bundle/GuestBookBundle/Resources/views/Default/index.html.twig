@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('bundles/guestbook/css/foundation.css') }}" />
     <link rel="stylesheet" href="{{ asset('bundles/guestbook/css/apps.css') }}" />
     <script src="{{ asset('bundles/guestbook/js/vendor/jquery.js') }}"></script>
+    <script src="{{ asset('bundles/guestbook/js/vendor/jquery.form.js') }}"></script>
     <script src="{{ asset('bundles/guestbook/js/vendor/foundation/foundation.min.js') }}"></script>
     <script src="{{ asset('bundles/guestbook/js/apps.js') }}"></script>
 </head>
@@ -21,7 +22,7 @@
             <li class="divider"></li>
             <li><a href="#">Home</a></li>
             <li class="divider"></li>
-            <li><a href="#">Github</a></li>
+            <li><a href="https://github.com/Erbolking/guestBook">Github</a></li>
         </ul>
     </section>
 </nav>
@@ -37,7 +38,7 @@
     </div>
     <div class="row">
         <div class="large-4 medium-4 small-6 columns">
-            <h5>There are 12 entries:</h5>
+            <h5>There are {{ entries|length }} entries:</h5>
         </div>
         <div class="large-2 medium-4 small-4 columns">
             <label for="perPage" class="left inline">Per page:</label>
@@ -54,9 +55,9 @@
             <div id="{{ entry.id }}" class="row entry">
                 <div class="author-details columns middle-2 large-2  small-4">
                     <div>
-                        <img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/>
+                        <img class="th" src="{% if entry.image %}{{ asset(entry.image) }}{% else %}{{ asset('bundles/guestbook/images/guest.png') }}{% endif %}" />
                         <div class="publicDate">
-                            <p> {{ entry.publicDate|date('Y-M-d H:i') }}</p>
+                            <p> {{ entry.publicDate|date('Y M d H:i') }}</p>
                         </div>
                     </div>
                 </div>
@@ -71,11 +72,16 @@
                     </span>
                     {% if entry.children|length %}
                         <hr>
-                        <h6>{{ entry.children|length }} Messages:</h6>
+                        <h6>{{ entry.children|length }} messages:</h6>
                         {% for subentry in entry.children %}
                             <div class="row">
-                                <div class="large-2 columns small-3"><img class="th" src="{{ asset('bundles/guestbook/images/guest.png') }}"/></div>
-                                <div class="large-10 columns"><p><strong>{{ subentry.name }} said:</strong> {{ subentry.message }}</p></div>
+                                <div class="large-2 columns small-5">
+                                    <img class="th" src="{% if subentry.image %}{{ asset(subentry.image) }}{% else %}{{ asset('bundles/guestbook/images/guest.png') }}{% endif %}"/>
+                                    <div class="publicDate">
+                                        <p> {{ subentry.publicDate|date('Y M d H:i') }}</p>
+                                    </div>
+                                </div>
+                                <div class="large-10 columns"><p><strong>{{ subentry.name }}(<a href="mailto:{{ subentry.email }}">{{ subentry.email }}</a>) said:</strong> {{ subentry.message }}</p></div>
                             </div>
                             {% if loop.last == false and loop.index > 0 %}
                                 <hr>
@@ -89,41 +95,11 @@
         <div class="row">
             {% include 'ErbolkingGuestBookBundle:Common:pagination.html.twig' %}
         </div>
-
         <hr/>
-        <section id="post" class="post">
-            <h5 class="title">Add a feedback</h5>
-            <div class="content" data-slug="panel1">
-                {{ form_start(form, {'action': path('post_entry')}) }}
-                <img src="{{ asset('bundles/guestbook/images/reply.png') }}"/>
-                <div class="reply-block">
-                    <div class="title">
-                        <span>Reply to: <span id="reply-name"></span></span>
-                        <span><a id="break-reply" href="#">×</a></span>
-                        {{ form_row(form.parent) }}
-                    </div>
-                </div>
-                {{ form_errors(form) }}
-                    <div class="row collapse">
-                        <div class="large-2 columns">
-                            {{ form_label(form.name) }}
-                        </div>
-                        <div class="large-10 columns">
-                            {{ form_row(form.name, { 'label': false }) }}
-                        </div>
-                    </div>
-                    <div class="row collapse">
-                        <div class="large-2 columns">
-                            {{ form_label(form.email) }}
-                        </div>
-                        <div class="large-10 columns">
-                            {{ form_row(form.email, { 'attr': {'placeholder': "test@test.com"}, 'label': false }) }}
-                        </div>
-                    </div>
-                    {{ form_row(form.message, { 'attr': {'rows': "6"}}) }}
-                {{ form_end(form) }}
-            </div>
-        </section>
+
+        <div id="postBlock">
+            {% include 'ErbolkingGuestBookBundle:Common:form.html.twig' %}
+        </div>
     </div>
 </div>
 
@@ -136,9 +112,9 @@
             </div>
             <div class="large-7 columns">
                 <ul class="inline-list right">
-                    <li><a href="#">GitHub</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="https://github.com/Erbolking/guestBook">GitHub</a></li>
+                    <li><a href="https://github.com/Erbolking/guestBook">About</a></li>
+                    <li><a href="https://github.com/Erbolking/guestBook">Contact</a></li>
                 </ul>
             </div>
         </div>

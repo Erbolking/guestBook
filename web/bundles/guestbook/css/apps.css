@@ -33,11 +33,13 @@ div.entry .guest-message {
     display: block;
     border-top: 1px dashed #6f6f6f;
     padding-top: 5px;
+    word-wrap: break-word;
 }
 
 div.entry .guest-name {
     font-weight: bold;
     text-transform: capitalize;
+    word-wrap: break-word;
 }
 
 div.entry .guest-post-id {
@@ -61,3 +63,27 @@ div.entry .guest-post-id {
 #reply-name {
     font-weight: bold;
 }
+
+#form_captcha {
+    display: inline;
+    position: relative;
+    width: 20%;
+    margin-left: 10px;
+    height: 50px;
+    top: 4px;
+    font-size: 24px;
+}
+
+img.captcha {
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.required:after {
+    content: ' *';
+}
+
+.validation, .required:after {
+    color: red;
+}
+

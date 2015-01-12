@@ -42,7 +42,7 @@ $(function() {
         var entityBlock = $('#' + previousEntryId);
         entityBlock.css('background', 'rgb(255, 255, 196)');
         setTimeout(function () {
-            entityBlock.css('background', 'none');
+            entityBlock.css('background', '');
         }, 1000);
         //scroll up
         if (previousPosition) {
@@ -52,4 +52,42 @@ $(function() {
         }
         e.preventDefault();
     });
+
+    var postForm = $('#postForm');
+    var options = {
+        beforeSend: function() {
+            postForm.fadeTo( "slow", 0.5);
+        },
+        complete: function(object) {
+            if (typeof object.responseJSON['errors'] !== 'undefined') {
+                //remove all previous error labels
+                $('.validation').remove();
+
+                var errors = object.responseJSON['errors'];
+;
+
+                for (var error in errors) {
+                    var errorHolder = $('<li></li>').html(errors[error]);
+                    var errorsCollection = $('<ul></ul>').addClass('validation').append(errorHolder);
+                    $('#form_' + error).after(errorsCollection);
+                }
+            }
+            if (typeof object.responseJSON['status'] !== 'undefined' && object.responseJSON['status'] == 'ok') {
+                var entry = object.responseJSON['entry'];
+
+                postForm.trigger("reset");
+
+            }
+            postForm.fadeTo( "slow", 1);
+        }
+    };
+    postForm.submit(function(e) {
+        e.preventDefault();
+        postForm.ajaxSubmit(options);
+    });
+
+    var createNewEntry = function(properties, parent) {
+
+    }
+
 });

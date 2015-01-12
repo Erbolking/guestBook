@@ -1,14 +1,22 @@
+{% set limitSnippet %}{% if pagination.perPage != 10 %}&limit={{ pagination.perPage }}{% endif %}{% endset %}
+{% set isPrev = pagination.currentPage - 1 >= 1 %}
+{% set isNext = pagination.currentPage + 1 <= pagination.pagesCount %}
+{% if pagination.pagesCount  %}
 <div class="large-centered large-8 medium-centered medium-8 push-4">
     <ul class="pagination" role="menubar" aria-label="Pagination">
-        <li class="arrow unavailable" aria-disabled="true"><a href="">&laquo; Previous</a></li>
+        <li class="arrow{% if isPrev == false %} unavailable{% endif %}" aria-disabled="true">
+            <a {% if isPrev %}href="?page={{ pagination.currentPage - 1 }}{{ limitSnippet }}"{% endif %}>&laquo; Previous</a>
+        </li>
         {% for i in 1..pagination.pagesCount %}
             <li {% if i == pagination.currentPage %}class="current"{% endif %}>
-                <a href="?page={{ i }}{% if pagination.perPage != 10 %}&limit={{ pagination.perPage }}{% endif %}">
+                <a href="?page={{ i }}{{ limitSnippet  }}">
                     {{ i }}
                 </a>
             </li>
         {% endfor %}
-        {#<li class="unavailable" aria-disabled="true"><a href="">&hellip;</a></li>#}
-        <li class="arrow"><a href="">Next &raquo;</a></li>
+        <li class="arrow {% if isNext == false %} unavailable{% endif %}">
+            <a {% if isNext %}href="?page={{ pagination.currentPage + 1 }}{{ limitSnippet }}"{% endif %}>Next &raquo;</a>
+        </li>
     </ul>
 </div>
+{% endif %}

@@ -1,0 +1,50 @@
+{% form_theme form 'ErbolkingGuestBookBundle:Form:captcha.html.twig' %}
+<section id="post" class="post">
+    <h5 class="title">Add a feedback</h5>
+    <div class="content">
+        {{ form_start(form, {'action': path('post_entry')}) }}
+        <img src="{{ asset('bundles/guestbook/images/reply.png') }}"/>
+        <div class="reply-block">
+            <div class="title">
+                <span>Reply to: <span id="reply-name"></span></span>
+                <span><a id="break-reply" href="#">×</a></span>
+                {{ form_row(form.parent) }}
+            </div>
+        </div>
+        {{ form_errors(form) }}
+        <div class="row collapse">
+            <div class="large-2 columns">
+                {{ form_label(form.name) }}
+            </div>
+            <div class="large-10 columns">
+                {{ form_row(form.name, { 'label': false }) }}
+            </div>
+        </div>
+        <div class="row collapse">
+            <div class="large-2 columns">
+                {{ form_label(form.email) }}
+            </div>
+            <div class="large-10 columns">
+                {{ form_row(form.email, { 'attr': {'placeholder': "test@test.com"}, 'label': false }) }}
+            </div>
+        </div>
+        <div class="row collapse">
+            <div class="large-2 columns">
+                {{ form_label(form.image) }}
+            </div>
+            <div class="large-10 columns">
+                {{ form_row(form.image, {'label': false }) }}
+            </div>
+        </div>
+        <div class="row collapse">
+            <div class="large-2 columns">
+                {{ form_label(form.captcha) }}
+            </div>
+            <div class="large-10 columns">
+                {{ form_row(form.captcha, {'label': false }) }}
+            </div>
+        </div>
+        {{ form_row(form.message, { 'attr': {'rows': "6"}}) }}
+        {{ form_end(form) }}
+    </div>
+</section>
