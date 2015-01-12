@@ -1,6 +1,7 @@
 .idea/*
 /web/bundles/
 !/web/bundles/guestbook/*
+!/web/bundles/guestbook/js/vendor/jquery.form.js
 /web/uploads/
 /app/bootstrap.php.cache
 /app/cache/*

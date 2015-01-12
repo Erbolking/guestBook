@@ -55,16 +55,14 @@ $(function() {
 
     var postForm = $('#postForm');
     var options = {
-        beforeSend: function() {
-            postForm.fadeTo( "slow", 0.5);
+        beforeSend: function () {
+            postForm.fadeTo("slow", 0.5);
         },
-        complete: function(object) {
+        complete: function (object) {
+            //remove all previous error labels
+            $('.validation').remove();
             if (typeof object.responseJSON['errors'] !== 'undefined') {
-                //remove all previous error labels
-                $('.validation').remove();
-
                 var errors = object.responseJSON['errors'];
-;
 
                 for (var error in errors) {
                     var errorHolder = $('<li></li>').html(errors[error]);
@@ -76,9 +74,12 @@ $(function() {
                 var entry = object.responseJSON['entry'];
 
                 postForm.trigger("reset");
+                //change captcha
+                $('img.captcha').trigger('click');
 
+                //create element
             }
-            postForm.fadeTo( "slow", 1);
+            postForm.fadeTo("slow", 1);
         }
     };
     postForm.submit(function(e) {
@@ -89,5 +90,20 @@ $(function() {
     var createNewEntry = function(properties, parent) {
 
     }
+
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 100) {
+            $('.scrollUp').fadeIn();
+        } else {
+            $('.scrollUp').fadeOut();
+        }
+    });
+
+    $('.scrollUp').click(function () {
+        $("html, body").animate({
+            scrollTop: 0
+        }, 800);
+        return false;
+    });
 
 });

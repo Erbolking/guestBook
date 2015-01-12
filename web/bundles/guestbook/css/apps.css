@@ -87,3 +87,12 @@ img.captcha {
     color: red;
 }
 
+.scrollUp {
+    width: 64px;
+    height: 64px;
+    position: fixed;
+    bottom: 100px;
+    right: 100px;
+    display: none;
+    background: url('../images/scroll.png') no-repeat;
+}

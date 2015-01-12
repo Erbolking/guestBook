@@ -81,7 +81,12 @@
                                         <p> {{ subentry.publicDate|date('Y M d H:i') }}</p>
                                     </div>
                                 </div>
-                                <div class="large-10 columns"><p><strong>{{ subentry.name }}(<a href="mailto:{{ subentry.email }}">{{ subentry.email }}</a>) said:</strong> {{ subentry.message }}</p></div>
+                                <div class="large-10 columns">
+                                    <p>
+                                        <span class="guest-name">{{ subentry.name }}</span> (<a href="mailto:{{ subentry.email }}">{{ subentry.email }}</a>) said:
+                                        <span class="guest-message" {{ subentry.message }}
+                                    </p>
+                                </div>
                             </div>
                             {% if loop.last == false and loop.index > 0 %}
                                 <hr>
@@ -102,7 +107,9 @@
         </div>
     </div>
 </div>
-
+<div class="hide-for-small-only">
+    <a href="#" class="scrollUp"></a>
+</div>
 <footer class="row">
     <div class="large-12 columns">
         <hr/>
@@ -114,7 +121,7 @@
                 <ul class="inline-list right">
                     <li><a href="https://github.com/Erbolking/guestBook">GitHub</a></li>
                     <li><a href="https://github.com/Erbolking/guestBook">About</a></li>
-                    <li><a href="https://github.com/Erbolking/guestBook">Contact</a></li>
+                    <li><a href="mailto:algoritm.ek@gmail.com">Contact</a></li>
                 </ul>
             </div>
         </div>
