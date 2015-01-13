@@ -1,5 +1,6 @@
+{% import "ErbolkingGuestBookBundle:Common:macros.html.twig" as macros %}
 {% form_theme form 'ErbolkingGuestBookBundle:Form:captcha.html.twig' %}
-<section id="post" class="post">
+<section id="post" class="post" data-prototype="{{ macros.renderEntry(form.vars.data)|e('html') }}">
     <h5 class="title">Add a feedback</h5>
     <div class="content">
         {{ form_start(form, {'action': path('post_entry')}) }}

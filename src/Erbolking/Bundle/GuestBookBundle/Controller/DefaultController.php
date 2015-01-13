@@ -87,7 +87,14 @@ class DefaultController extends Controller
             $em->persist($entry);
             $em->flush();
             if ($request->isXmlHttpRequest()) {
-                $entryExtraInfo = array_merge($formPost, array('image' => $entry->getImage()));
+
+                $entryExtraInfo = array_merge($formPost,
+                    array(
+                        'id' => $entry->getId(),
+                        'image' => $entry->getImage(),
+                        'publicDate' => $entry->getPublicDate()->format('Y M d H:i')
+                    )
+                );
                 return new JsonResponse(array('status' => 'ok', 'entry' => $entryExtraInfo));
             }
             return $this->redirect($this->generateUrl('list'));

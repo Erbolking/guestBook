@@ -4,7 +4,7 @@ $(function() {
 
     //add listeners
     var previousPosition, previousEntryId;
-    $("a.scroll").click(function (e) {
+    $('#entries').on('click', 'a.scroll', function (e) {
         var scrollDown = 0;
         if ($(this.hash).offset().top > $(document).height() - $(window).height()) {
             scrollDown = $(document).height() - $(window).height();
@@ -17,13 +17,13 @@ $(function() {
         }, 1200, 'swing');
 
         //render reply block
-        var username = $(this).data('username');
+        var name = $(this).data('name');
 
         var id = $(this).data('id');
         previousPosition = e.pageY - 100;
         previousEntryId = id;
-        if (username) {
-            $('#reply-name').html(username);
+        if (name) {
+            $('#reply-name').html(name);
             $('#form_parent').val(id);
             $('.reply-block').show();
         }
@@ -46,9 +46,7 @@ $(function() {
         }, 1000);
         //scroll up
         if (previousPosition) {
-            $('body').animate({
-                scrollTop: previousPosition
-            }, 400, 'swing');
+            scrollTo(400);
         }
         e.preventDefault();
     });
@@ -56,7 +54,7 @@ $(function() {
     var postForm = $('#postForm');
     var options = {
         beforeSend: function () {
-            postForm.fadeTo("slow", 0.5);
+            postForm.fadeTo('slow', 0.5);
         },
         complete: function (object) {
             //remove all previous error labels
@@ -73,13 +71,15 @@ $(function() {
             if (typeof object.responseJSON['status'] !== 'undefined' && object.responseJSON['status'] == 'ok') {
                 var entry = object.responseJSON['entry'];
 
-                postForm.trigger("reset");
+                postForm.trigger('reset');
                 //change captcha
                 $('img.captcha').trigger('click');
 
                 //create element
+                createNewEntry(entry, null);
+                scrollTo(0);
             }
-            postForm.fadeTo("slow", 1);
+            postForm.fadeTo('slow', 1);
         }
     };
     postForm.submit(function(e) {
@@ -87,9 +87,25 @@ $(function() {
         postForm.ajaxSubmit(options);
     });
 
-    var createNewEntry = function(properties, parent) {
+    var scrollTo = function(y) {
+        $('html, body').animate({
+            scrollTop: y
+        }, 800);
+    };
 
-    }
+    var createNewEntry = function(properties, parent) {
+        var prototype = $($('#post').data('prototype'));
+        var entries = $('#entries');
+        for (var property in properties) {
+            prototype.find('.' + property).html(properties[property]);
+        }
+        prototype.find('.entry').prop('id', properties['id']);
+        prototype.find('.scroll')
+            .attr('data-id', properties['id'])
+            .attr('data-name', properties['name']);
+
+        entries.prepend(prototype);
+    };
 
     $(window).scroll(function () {
         if ($(this).scrollTop() > 100) {
@@ -100,9 +116,7 @@ $(function() {
     });
 
     $('.scrollUp').click(function () {
-        $("html, body").animate({
-            scrollTop: 0
-        }, 800);
+        scrollTo(0);
         return false;
     });
 
