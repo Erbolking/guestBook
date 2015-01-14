@@ -224,10 +224,10 @@ class Entry
     /**
      * Set image
      *
-     * @param UploadedFile $image
+     * @param $image
      * @return $this
      */
-    public function setImage(UploadedFile $image)
+    public function setImage($image)
     {
         $this->image = $image;
 
@@ -270,7 +270,7 @@ class Entry
     /**
      * Get parentId
      *
-     * @return string
+     * @return Entry
      */
     public function getParent()
     {

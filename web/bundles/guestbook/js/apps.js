@@ -20,7 +20,7 @@ $(function() {
         var name = $(this).data('name');
 
         var id = $(this).data('id');
-        previousPosition = e.pageY - 100;
+        previousPosition = e.pageY - 100 - $(this).outerHeight();
         previousEntryId = id;
         if (name) {
             $('#reply-name').html(name);
@@ -36,17 +36,14 @@ $(function() {
 
     $('#break-reply').click(function(e) {
         //hide reply block
-        $('form_parent').val('');
+        $('#form_parent').val('');
         $('.reply-block').hide();
 
-        var entityBlock = $('#' + previousEntryId);
-        entityBlock.css('background', 'rgb(255, 255, 196)');
-        setTimeout(function () {
-            entityBlock.css('background', '');
-        }, 1000);
+        backLightEntry($('#' + previousEntryId));
+
         //scroll up
         if (previousPosition) {
-            scrollTo(400);
+            scrollTo(previousPosition);
         }
         e.preventDefault();
     });
@@ -70,14 +67,24 @@ $(function() {
             }
             if (typeof object.responseJSON['status'] !== 'undefined' && object.responseJSON['status'] == 'ok') {
                 var entry = object.responseJSON['entry'];
+                var topScroll = 0;
 
+                //clear form
                 postForm.trigger('reset');
+                $('#form_parent').val('');
+                $('.reply-block').hide();
+
                 //change captcha
                 $('img.captcha').trigger('click');
 
                 //create element
-                createNewEntry(entry, null);
-                scrollTo(0);
+                createNewEntry(entry);
+                if (entry['parent']) {
+                    topScroll = $('#' + entry['parent'])
+                        .find('.sub-entries .row:last')
+                        .offset()['top'] - 100
+                }
+                scrollTo(topScroll);
             }
             postForm.fadeTo('slow', 1);
         }
@@ -87,27 +94,7 @@ $(function() {
         postForm.ajaxSubmit(options);
     });
 
-    var scrollTo = function(y) {
-        $('html, body').animate({
-            scrollTop: y
-        }, 800);
-    };
-
-    var createNewEntry = function(properties, parent) {
-        var prototype = $($('#post').data('prototype'));
-        var entries = $('#entries');
-        for (var property in properties) {
-            prototype.find('.' + property).html(properties[property]);
-        }
-        prototype.find('.entry').prop('id', properties['id']);
-        prototype.find('.scroll')
-            .attr('data-id', properties['id'])
-            .attr('data-name', properties['name']);
-
-        entries.prepend(prototype);
-    };
-
-    $(window).scroll(function () {
+    $(window).scroll(function() {
         if ($(this).scrollTop() > 100) {
             $('.scrollUp').fadeIn();
         } else {
@@ -115,9 +102,81 @@ $(function() {
         }
     });
 
-    $('.scrollUp').click(function () {
+    $('.scrollUp').click(function() {
         scrollTo(0);
         return false;
     });
 
+    /**
+     * Smoothly Scroll to specified position
+     * @param y
+     */
+    var scrollTo = function(y) {
+        $('html, body').animate({
+            scrollTop: y
+        }, 800);
+    };
+
+    /**
+     * Create Entry
+     * @param properties
+     */
+    var createNewEntry = function(properties) {
+        var prototypeName = properties['parent'] ? 'subentry-prototype' : 'prototype';
+        var prototype = $($('#post').data(prototypeName));
+
+        for (var property in properties) {
+            var element = prototype.find('.' + property);
+            switch (property) {
+                case 'message':
+                    element.html(properties[property].replace(/\n/g,"<br>"));
+                    break;
+                case 'image':
+                    if (properties[property]) {
+                        element.attr('src', properties[property]);
+                    }
+                    break;
+                case 'email':
+                    element.attr('href', 'mailto:' + properties[property]);
+                    //deliberate fallthrough
+                default:
+                    element.html(properties[property]);
+            }
+        }
+        backLightEntry(prototype);
+        if (properties['parent']) {
+            var subEntries = $('#' + properties['parent']).find('.sub-entries');
+            var subEntriesCount = parseInt(subEntries.find('.entries-count').html());
+
+            //increase sub messages count
+            subEntries.find('.entries-count').html(++subEntriesCount);
+
+            prototype.prepend('<hr />');
+            subEntries
+                .removeClass('hide')
+                .append(prototype);
+        } else {
+            var entriesCountBlock = $('#entries-count');
+            prototype.attr('id', properties['id']);
+            prototype.find('.scroll')
+                .attr('data-id', properties['id'])
+                .attr('data-name', properties['name']);
+
+            //increase sub messages count
+            entriesCountBlock.html(parseInt(entriesCountBlock.html()) + 1);
+
+            $('#entries').prepend(prototype);
+        }
+    };
+
+    /**
+     * Highlight entry
+     * @param entryBlock
+     */
+    var backLightEntry = function(entryBlock) {
+        entryBlock.css('background', 'rgb(255, 255, 196)');
+        setTimeout(function () {
+            entryBlock.css('background', '');
+        }, 1000);
+    };
 });

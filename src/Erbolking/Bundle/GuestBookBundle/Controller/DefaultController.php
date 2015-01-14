@@ -87,12 +87,16 @@ class DefaultController extends Controller
             $em->persist($entry);
             $em->flush();
             if ($request->isXmlHttpRequest()) {
+                //remove security fields
+                unset($formPost['_token'], $formPost['captcha']);
 
                 $entryExtraInfo = array_merge($formPost,
                     array(
                         'id' => $entry->getId(),
                         'image' => $entry->getImage(),
-                        'publicDate' => $entry->getPublicDate()->format('Y M d H:i')
+                        'publicDate' => $entry->getPublicDate()->format('Y M d H:i'),
+                        'parent' => $entry->getParent() ? $entry->getParent()->getId() : null,
+                        'message' => htmlspecialchars($entry->getMessage()),
                     )
                 );
                 return new JsonResponse(array('status' => 'ok', 'entry' => $entryExtraInfo));
@@ -118,7 +122,7 @@ class DefaultController extends Controller
             ->add('name', 'text', array(
                     'label' => 'Your name',
                     'label_attr' => array('class' => 'inline'),
-                    'attr' => array('pattern' => '[a-zA-Z]+( [a-zA-Z]+)?', 'placeholder' => 'Albert Einstein'),
+                    'attr' => array('pattern' => '[a-zA-Zа-яА-Я]+( [a-zA-Zа-яА-Я]+)?', 'placeholder' => 'Albert Einstein'),
                 )
             )
             ->add('email', 'email', array(

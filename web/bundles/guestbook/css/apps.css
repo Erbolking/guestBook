@@ -41,6 +41,14 @@ div.entry .id {
     font-size: 12px;
 }
 
+div.entry .email:before {
+    content: '(';
+}
+
+div.entry .email:after{
+    content: ')';
+}
+
 .reply-button {
     padding: 2px;
 }
