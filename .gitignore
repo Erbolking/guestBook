@@ -1,7 +1,8 @@
 .idea/*
 /web/bundles/
 !/web/bundles/guestbook/*
-/web/uploads/
+/web/uploads/*
+!/web/uploads/
 /app/bootstrap.php.cache
 /app/cache/*
 /app/config/parameters.yml
