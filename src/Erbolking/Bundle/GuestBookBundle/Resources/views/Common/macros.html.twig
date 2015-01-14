@@ -1,0 +1,47 @@
+{% macro renderEntry(entry) %}
+    <div id="{{ entry.id }}" class="row entry">
+        <div class="middle-2 large-2 small-4 text-center columns">
+            <div>
+                <img class="image th" src="{% if entry.image %}{{ asset(entry.image) }}{% else %}{{ asset('bundles/guestbook/images/guest.png') }}{% endif %}" />
+                <p class="publicDate">{{ entry.publicDate|date('Y M d H:i') }}</p>
+            </div>
+        </div>
+        <div class="middle-10 large-10 small-8 columns">
+            <div class="post">
+                <span class="name">{{ entry.name }}</span> <a class="email" href="mailto:{{ entry.email }}">{{ entry.email }}</a> said:
+                <span class="id right">#{{ entry.id }}</span>
+                <span class="message">{{ entry.message|e('html')|nl2br }}</span>
+            </div>
+            <span class="reply-button">
+                <a class="scroll" data-name="{{ entry.name }}" data-id="{{ entry.id }}" href="#post">Reply</a>
+            </span>
+            <div class="sub-entries {% if entry.children|length == 0 %}hide{% endif %}">
+                <hr />
+                <h6><span class="entries-count">{{ entry.children|length }}</span> messages:</h6>
+                {% if entry.children|length %}
+                    {% for subentry in entry.children %}
+                        {{ _self.renderSubEntry(subentry) }}
+                        {% if loop.last == false and loop.index > 0 %}
+                            <hr />
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <hr />
+{% endmacro %}
+{% macro renderSubEntry(subentry) %}
+    <div class="row">
+        <div class="large-2 small-5 columns">
+            <img class="image th" src="{% if subentry.image %}{{ asset(subentry.image) }}{% else %}{{ asset('bundles/guestbook/images/guest.png') }}{% endif %}"/>
+            <p class="publicDate"> {{ subentry.publicDate|date('Y M d H:i') }}</p>
+        </div>
+        <div class="large-10 columns">
+            <p>
+                <span class="name">{{ subentry.name }}</span> <a class="email" href="mailto:{{ subentry.email }}">{{ subentry.email }}</a> said:
+                <span class="message">{{ subentry.message|raw }}</span>
+            </p>
+        </div>
+    </div>
+{% endmacro %}

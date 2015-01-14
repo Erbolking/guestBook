@@ -1,20 +1,15 @@
 label.left {
     margin-right:4px;
 }
-.author-details {
-    text-align: center;
-}
+
 .publicDate {
-    text-align: center;
-    padding: 2px 2px 0 2px;
-    border-radius: 2px;
-}
-.publicDate p {
     font-size: 14px;
+    padding: 2px 2px 0 2px;
+    text-align: center;
 }
 
-.publicDate p:before {
-    content: '⌚';
+.publicDate:before {
+    content: '⌚ ';
 }
 
 div.entry {
@@ -24,26 +19,34 @@ div.entry {
     -webkit-transition: all 1s;-moz-transition: all 1s;-ms-transition: all 1s;-o-transition: all 1s;transition: all 1s;
 }
 
-div.entry .guest-post {
+div.entry .post {
     line-height: 1.6;
     margin-bottom: 1.25rem;
 }
 
-div.entry .guest-message {
+div.entry .message {
     display: block;
     border-top: 1px dashed #6f6f6f;
     padding-top: 5px;
     word-wrap: break-word;
 }
 
-div.entry .guest-name {
+div.entry .name {
     font-weight: bold;
     text-transform: capitalize;
     word-wrap: break-word;
 }
 
-div.entry .guest-post-id {
+div.entry .id {
     font-size: 12px;
+}
+
+div.entry .email:before {
+    content: '(';
+}
+
+div.entry .email:after{
+    content: ')';
 }
 
 .reply-button {
@@ -87,3 +90,12 @@ img.captcha {
     color: red;
 }
 
+.scrollUp {
+    width: 64px;
+    height: 64px;
+    position: fixed;
+    bottom: 100px;
+    right: 100px;
+    display: none;
+    background: url('../images/scroll.png') no-repeat;
+}

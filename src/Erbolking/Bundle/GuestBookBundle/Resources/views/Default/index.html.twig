@@ -1,3 +1,4 @@
+{% import "ErbolkingGuestBookBundle:Common:macros.html.twig" as macros %}
 <!doctype html>
 <html class="no-js" lang="en">
 <head>
@@ -38,7 +39,7 @@
     </div>
     <div class="row">
         <div class="large-4 medium-4 small-6 columns">
-            <h5>There are {{ entries|length }} entries:</h5>
+            <h5>There are <span id="entries-count">{{ entries|length }}</span> entries:</h5>
         </div>
         <div class="large-2 medium-4 small-4 columns">
             <label for="perPage" class="left inline">Per page:</label>
@@ -50,47 +51,9 @@
         </div>
     </div>
     <hr>
-    <div class="large-10 columns">
+    <div class="large-10 columns" id="entries">
         {% for entry in entries %}
-            <div id="{{ entry.id }}" class="row entry">
-                <div class="author-details columns middle-2 large-2  small-4">
-                    <div>
-                        <img class="th" src="{% if entry.image %}{{ asset(entry.image) }}{% else %}{{ asset('bundles/guestbook/images/guest.png') }}{% endif %}" />
-                        <div class="publicDate">
-                            <p> {{ entry.publicDate|date('Y M d H:i') }}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="columns middle-10 large-10 small-8">
-                    <div class="guest-post">
-                        <span class="guest-name">{{ entry.name }}</span> (<a href="mailto:{{ entry.email }}">{{ entry.email }}</a>) said:
-                        <span class="guest-post-id right">#{{ entry.id }}</span>
-                        <span class="guest-message">{{ entry.message }}</span>
-                    </div>
-                    <span class="reply-button">
-                        <a class="scroll" data-username="{{ entry.name }}" data-id="{{ entry.id }}" href="#post">Reply</a>
-                    </span>
-                    {% if entry.children|length %}
-                        <hr>
-                        <h6>{{ entry.children|length }} messages:</h6>
-                        {% for subentry in entry.children %}
-                            <div class="row">
-                                <div class="large-2 columns small-5">
-                                    <img class="th" src="{% if subentry.image %}{{ asset(subentry.image) }}{% else %}{{ asset('bundles/guestbook/images/guest.png') }}{% endif %}"/>
-                                    <div class="publicDate">
-                                        <p> {{ subentry.publicDate|date('Y M d H:i') }}</p>
-                                    </div>
-                                </div>
-                                <div class="large-10 columns"><p><strong>{{ subentry.name }}(<a href="mailto:{{ subentry.email }}">{{ subentry.email }}</a>) said:</strong> {{ subentry.message }}</p></div>
-                            </div>
-                            {% if loop.last == false and loop.index > 0 %}
-                                <hr>
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            <hr/>
+            {{ macros.renderEntry(entry) }}
         {% endfor %}
         <div class="row">
             {% include 'ErbolkingGuestBookBundle:Common:pagination.html.twig' %}
@@ -102,7 +65,9 @@
         </div>
     </div>
 </div>
-
+<div class="hide-for-small-only">
+    <a href="#" class="scrollUp"></a>
+</div>
 <footer class="row">
     <div class="large-12 columns">
         <hr/>
@@ -114,7 +79,7 @@
                 <ul class="inline-list right">
                     <li><a href="https://github.com/Erbolking/guestBook">GitHub</a></li>
                     <li><a href="https://github.com/Erbolking/guestBook">About</a></li>
-                    <li><a href="https://github.com/Erbolking/guestBook">Contact</a></li>
+                    <li><a href="mailto:algoritm.ek@gmail.com">Contact</a></li>
                 </ul>
             </div>
         </div>
